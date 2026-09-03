@@ -1,0 +1,54 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const NAV_ITEMS = [
+  { href: "/", label: "Script", icon: "📜" },
+  { href: "/screenplay", label: "Scenes", icon: "🎬" },
+  { href: "/schedule", label: "Schedule", icon: "📅" },
+  { href: "/board", label: "Board", icon: "📋" },
+  { href: "/dashboard", label: "Dashboard", icon: "📊" },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+
+  return (
+    <aside className="fixed left-0 top-0 bottom-0 w-60 bg-dark-800 border-r border-dark-500 flex flex-col z-50">
+      <div className="p-5 border-b border-dark-500">
+        <h1 className="text-xl font-bold text-amber-500 flex items-center gap-2">
+          <span className="text-2xl">🎬</span> ROYA
+        </h1>
+        <p className="text-xs text-gray-500 mt-1">AI Film Production Manager</p>
+      </div>
+
+      <nav className="flex-1 p-3 space-y-1">
+        {NAV_ITEMS.map((item) => {
+          const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                active
+                  ? "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+                  : "text-gray-400 hover:bg-dark-700 hover:text-gray-200 border border-transparent"
+              }`}
+            >
+              <span className="text-base">{item.icon}</span>
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="p-4 border-t border-dark-500">
+        <div className="card !p-3 text-center">
+          <p className="text-xs text-gray-500">WebMCP Challenge</p>
+          <p className="text-[10px] text-gray-600 mt-1">8 tools registered</p>
+        </div>
+      </div>
+    </aside>
+  );
+}
