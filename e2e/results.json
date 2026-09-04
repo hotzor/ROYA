@@ -1,0 +1,48 @@
+{
+  "appUrl": "https://roya-seven.vercel.app",
+  "activBrowser": "cached-chrome-152.0.7977",
+  "activChromeVersion": "152.0.0.0",
+  "modelContextSurface": {
+    "document": true,
+    "navigator": false
+  },
+  "flags": [
+    "--enable-features=WebMCP,WebMCPAPI,WebModelContext"
+  ],
+  "toolCount": 8,
+  "registeredTools": [
+    "analyze_script",
+    "assign_task",
+    "export_call_sheet",
+    "generate_schedule",
+    "get_production_status",
+    "get_scene_breakdown",
+    "get_weather_forecast",
+    "reschedule_scene"
+  ],
+  "expectedTools": [
+    "analyze_script",
+    "get_scene_breakdown",
+    "get_weather_forecast",
+    "generate_schedule",
+    "reschedule_scene",
+    "assign_task",
+    "get_production_status",
+    "export_call_sheet"
+  ],
+  "allRegistered": true,
+  "missing": [],
+  "execution": {
+    "get_production_status": {
+      "ok": true,
+      "raw": "{\"error\":false,\"data\":{\"totalScenes\":12,\"completedScenes\":0,\"totalTasks\":0,\"completedTasks\":0,\"shootingDays\":3,\"nextShootDate\":null,\"weatherAlerts\":[],\"completionPercent\":0}}"
+    },
+    "get_weather_forecast": {
+      "ok": true,
+      "raw": "{\"error\":false,\"data\":{\"date\":\"2025-02-03\",\"location\":\"Studio A\",\"temp\":16,\"conditions\":\"Light Rain\",\"rainPercent\":58,\"icon\":\"🌧️\"}}"
+    }
+  },
+  "executionPassed": true,
+  "verdict": "PASS",
+  "timestamp": "2026-09-04T01:02:00.532Z"
+}

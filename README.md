@@ -89,6 +89,41 @@ Pre-loaded screenplay "The Last Signal" — a sci-fi thriller about signal disco
 - **6 departments** (Camera, Lighting, Art, Sound, Wardrobe, Props)
 - **8 pre-assigned tasks** with varying statuses
 
+## Demo Data
+
+Pre-loaded screenplay "The Last Signal" — a sci-fi thriller about signal discovery:
+
+- **12 scenes** across 3 shooting days
+- **6 characters** (Alex Mercer, Mira Chen, Chef Dolan, Agent Reyes, Captain Park, Dr. Wells)
+- **4 locations** (Mission Control, Rooftop, Break Room, Server Room)
+- **6 departments** (Camera, Lighting, Art, Sound, Wardrobe, Props)
+- **8 pre-assigned tasks** with varying statuses
+
+## Verify the WebMCP integration
+
+Run the end-to-end WebMCP test to confirm all 8 tools are registered by the browser and execute correctly:
+
+```bash
+node e2e/webmcp.test.mjs
+```
+
+The script:
+
+1. Discovers the **highest-version Puppeteer-cached Chrome** first, then falls back to system Chrome → Edge.
+2. Launches Chrome with `--enable-features=WebMCP,WebMCPAPI,WebModelContext`.
+3. Wraps `navigator.modelContext.registerTool` / `document.modelContext.registerTool` **before** navigation via `evaluateOnNewDocument`, recording every registered tool to `window.__royaTools`.
+4. Loads `https://roya-seven.vercel.app` (override with `ROYA_URL=...`) and asserts **all 8 tools** are registered.
+5. Executes `get_production_status` and `get_weather_forecast` through the recorded execute functions and prints their JSON results.
+6. Saves evidence to:
+   - `e2e/shots/homepage.png` — application home page
+   - `e2e/shots/schedule.png` — schedule page with weather panel
+   - `e2e/shots/console.txt` — console output listing the 8 registered tools + execution results
+   - `e2e/results.json` — machine-readable tool names + execution outputs
+
+Exit code `0` = PASS (8/8 registered, both tools executed). The environment variable `PUPPETEER_EXECUTABLE_PATH` forces a specific browser binary.
+
+> **Note:** WebMCP is an early-preview browser API. It requires a Chromium base of **146+** with the WebMCP test flag (Chrome `#enable-webmcp-testing`) or the launch flag above. Chrome 148+ exposes the producer API on `document.modelContext` (`navigator.modelContext` is the deprecated alias on 146–149).
+
 ## License
 
 MIT
