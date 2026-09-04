@@ -1,5 +1,5 @@
 ROYA WebMCP verification — console (browser: cached-chrome-152.0.7977, Chrome 152.0.0.0)
-Target: http://localhost:3000
+Target: https://roya-seven.vercel.app
 Modern modelContext: true
 
 Registered tools:
@@ -17,7 +17,6 @@ Execution:
   [OK] get_weather_forecast => {"error":false,"data":{"date":"2025-02-03","location":"Studio A","temp":16,"conditions":"Light Rain","rainPercent":58,"icon":"🌧️"}}
 
 Page console (last 25):
-  [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
   [log] [ROYA] MCP tool registered: analyze_script
   [log] [ROYA] MCP tool registered: get_scene_breakdown
   [log] [ROYA] MCP tool registered: get_weather_forecast
@@ -27,9 +26,6 @@ Page console (last 25):
   [log] [ROYA] MCP tool registered: get_production_status
   [log] [ROYA] MCP tool registered: export_call_sheet
   [log] [ROYA] 8 WebMCP tools registered successfully.
-  [log] [Fast Refresh] rebuilding
-  [log] [Fast Refresh] done in 641ms
-  [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
   [log] [ROYA] MCP tool registered: analyze_script
   [log] [ROYA] MCP tool registered: get_scene_breakdown
   [log] [ROYA] MCP tool registered: get_weather_forecast
@@ -39,4 +35,3 @@ Page console (last 25):
   [log] [ROYA] MCP tool registered: get_production_status
   [log] [ROYA] MCP tool registered: export_call_sheet
   [log] [ROYA] 8 WebMCP tools registered successfully.
-  [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

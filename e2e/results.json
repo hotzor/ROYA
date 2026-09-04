@@ -1,5 +1,5 @@
 {
-  "appUrl": "http://localhost:3000",
+  "appUrl": "https://roya-seven.vercel.app",
   "activBrowser": "cached-chrome-152.0.7977",
   "activChromeVersion": "152.0.0.0",
   "modelContextSurface": {
@@ -44,5 +44,5 @@
   },
   "executionPassed": true,
   "verdict": "PASS",
-  "timestamp": "2026-09-04T02:49:50.839Z"
+  "timestamp": "2026-09-04T02:53:57.720Z"
 }
