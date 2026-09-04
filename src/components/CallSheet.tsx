@@ -10,20 +10,20 @@ interface CallSheetProps {
 export default function CallSheetDisplay({ sheet, onExport }: CallSheetProps) {
   return (
     <div className="card space-y-6">
-      <div className="flex items-center justify-between border-b border-dark-500 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-dark-500 pb-4">
         <div>
-          <h2 className="text-xl font-bold text-amber-400">
+          <h2 className="text-lg md:text-xl font-bold text-amber-400 leading-tight">
             🎬 Call Sheet — Day {sheet.dayNumber}
           </h2>
           <p className="text-sm text-gray-400 mt-1">{sheet.date}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 shrink-0">
           {onExport && (
             <>
-              <button onClick={() => onExport("text")} className="btn-secondary text-xs">
+              <button onClick={() => onExport("text")} className="btn-secondary text-xs min-h-[44px]">
                 📄 Export TXT
               </button>
-              <button onClick={() => onExport("html")} className="btn-primary text-xs">
+              <button onClick={() => onExport("html")} className="btn-primary text-xs min-h-[44px]">
                 🌐 Export HTML
               </button>
             </>

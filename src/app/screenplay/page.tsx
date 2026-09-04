@@ -51,7 +51,7 @@ export default function ScreenplayPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-3xl font-bold text-amber-500">🎬 Scene Breakdown</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-amber-500 leading-tight">🎬 Scene Breakdown</h1>
         <p className="text-gray-400 mt-2">
           All extracted scenes with cast, props, locations, and department notes.
         </p>

@@ -97,21 +97,21 @@ export default function BoardPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-start justify-between">
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-amber-500">📋 Production Board</h1>
-          <p className="text-gray-400 mt-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-amber-500 leading-tight">📋 Production Board</h1>
+          <p className="text-gray-400 mt-2 text-sm md:text-base">
             Kanban task board — drag tasks across departments and statuses.
           </p>
         </div>
-        <button onClick={() => setShowForm(!showForm)} className="btn-primary">
+        <button onClick={() => setShowForm(!showForm)} className="btn-primary min-h-[44px] shrink-0">
           {showForm ? "✕ Cancel" : "+ New Task"}
         </button>
       </header>
 
       {showForm && (
         <form onSubmit={handleCreateTask} className="card space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <label className="text-xs text-gray-500 block mb-1">Scene</label>
               <select
@@ -160,13 +160,13 @@ export default function BoardPage() {
               />
             </div>
           </div>
-          <button type="submit" className="btn-primary text-sm">
+          <button type="submit" className="btn-primary text-sm min-h-[44px]">
             Create Task
           </button>
         </form>
       )}
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {STATUSES.map((status) => {
           const statusTasks = tasks.filter((t) => t.status === status);
           return (
@@ -200,7 +200,7 @@ export default function BoardPage() {
                         <button
                           key={s}
                           onClick={() => moveTask(task.id, s)}
-                          className="text-[10px] text-gray-600 hover:text-amber-400 px-2 py-1 rounded hover:bg-dark-600 transition-all"
+                          className="text-[11px] text-gray-600 hover:text-amber-400 px-2.5 py-1.5 rounded hover:bg-dark-600 transition-all"
                         >
                           → {STATUS_LABELS[s]}
                         </button>

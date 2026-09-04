@@ -23,7 +23,7 @@ export default function ScreenplayEditor({ onAnalyze, isLoading }: ScreenplayEdi
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-gray-100">Screenplay Input</h2>
           <p className="text-sm text-gray-500">
@@ -32,7 +32,7 @@ export default function ScreenplayEditor({ onAnalyze, isLoading }: ScreenplayEdi
         </div>
         <button
           onClick={handleLoadDemo}
-          className="btn-secondary text-sm"
+          className="btn-secondary text-sm min-h-[44px] sm:w-auto w-full"
           disabled={isLoading}
         >
           Load Demo Script
@@ -57,7 +57,7 @@ FADE IN:
         disabled={isLoading}
       />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <p className="text-xs text-gray-600">
           {script.length > 0
             ? `${script.split("\n").filter((l) => l.trim()).length} lines · ${script.length} characters`
@@ -66,7 +66,7 @@ FADE IN:
         <button
           onClick={handleAnalyze}
           disabled={isLoading || script.trim().length === 0}
-          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+          className="btn-primary min-h-[44px] w-full sm:w-auto disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">

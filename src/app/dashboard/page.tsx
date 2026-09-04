@@ -71,7 +71,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-3xl font-bold text-amber-500">📊 Production Dashboard</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-amber-500 leading-tight">📊 Production Dashboard</h1>
         <p className="text-gray-400 mt-2">
           Overview of your production status, schedule, and call sheets.
         </p>
@@ -93,7 +93,7 @@ export default function DashboardPage() {
           <h2 className="text-lg font-bold text-gray-100 mb-4">📅 Call Sheet</h2>
           {availableDates.length > 0 ? (
             <div className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {availableDates.map((d) => (
                   <button
                     key={d}

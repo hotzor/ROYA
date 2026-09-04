@@ -55,7 +55,7 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-3xl font-bold text-amber-500">🎬 Script Analysis</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-amber-500 leading-tight">🎬 Script Analysis</h1>
         <p className="text-gray-400 mt-2">
           Paste a screenplay to extract scenes, or explore the pre-loaded demo data.
         </p>
