@@ -30,14 +30,16 @@ export interface ToastState {
 const DEFAULT_START = "2025-02-03";
 
 function weekdayOffset(startDate: string, dayNumber: number): string {
-  const d = new Date(`${startDate}T00:00:00`);
+  const [y, m, d] = startDate.split("-").map(Number);
+  const base = Date.UTC(y, m - 1, d);
+  let cursor = base;
   let added = 0;
   while (added < Math.max(dayNumber - 1, 0)) {
-    d.setDate(d.getDate() + 1);
-    const dow = d.getDay();
+    cursor += 86400000;
+    const dow = new Date(cursor).getUTCDay();
     if (dow !== 0 && dow !== 6) added++;
   }
-  return d.toISOString().split("T")[0];
+  return new Date(cursor).toISOString().split("T")[0];
 }
 
 /**
