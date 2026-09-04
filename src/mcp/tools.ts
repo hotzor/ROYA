@@ -9,6 +9,7 @@ interface MCPTool {
   description: string;
   inputSchema: Record<string, unknown>;
   handler: (input: Record<string, unknown>) => Promise<unknown>;
+  execute?: (input: Record<string, unknown>) => Promise<unknown>;
 }
 
 function getModelContext(): ModelContext | null {
@@ -205,7 +206,12 @@ export function registerMCPTools(): void {
 
   for (const tool of TOOLS) {
     try {
-      ctx.registerTool(tool);
+      // WebMCP spec expects an `execute` function. Provide it from `handler`.
+      const webmcpTool = {
+        ...tool,
+        execute: tool.handler,
+      };
+      ctx.registerTool(webmcpTool);
       console.log(`[ROYA] MCP tool registered: ${tool.name}`);
     } catch (err) {
       console.warn(`[ROYA] Failed to register tool ${tool.name}:`, err);
