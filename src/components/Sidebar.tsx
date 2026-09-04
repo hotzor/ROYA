@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRoya } from "@/components/RoyaProvider";
 
 const NAV_ITEMS = [
   { href: "/", label: "Script", icon: "📜" },
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { reset } = useRoya();
 
   const isActive = (item: { href: string }) =>
     item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -45,21 +47,35 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-dark-500">
+        <div className="p-4 border-t border-dark-500 space-y-2">
           <div className="card !p-3 text-center">
             <p className="text-xs text-gray-500">WebMCP Challenge</p>
             <p className="text-[10px] text-gray-600 mt-1">8 tools registered</p>
           </div>
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center gap-2 btn-secondary text-sm min-h-[44px]"
+          >
+            ↺ Reset
+          </button>
         </div>
       </aside>
 
       {/* Mobile top bar (md:hidden) */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-dark-800 border-b border-dark-500">
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between gap-2 px-4 py-3">
           <h1 className="text-lg font-bold text-amber-500 flex items-center gap-2">
             <span className="text-xl">🎬</span> ROYA
           </h1>
-          <p className="text-[10px] text-gray-500">WebMCP · 8 tools</p>
+          <div className="flex items-center gap-2">
+            <p className="text-[10px] text-gray-500">WebMCP · 8 tools</p>
+            <button
+              onClick={reset}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-dark-600 hover:bg-dark-500 text-gray-200 border border-dark-500 min-h-[44px]"
+            >
+              ↺ Reset
+            </button>
+          </div>
         </div>
         <nav className="flex flex-wrap gap-1 px-2 pb-2">
           {NAV_ITEMS.map((item) => (

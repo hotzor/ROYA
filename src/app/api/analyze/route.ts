@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeScript } from "@/lib/ai";
-import { store } from "@/lib/store";
 import { demoScenes } from "@/lib/demo-data";
 
 export async function POST(request: NextRequest) {
@@ -24,8 +23,6 @@ export async function POST(request: NextRequest) {
       status: "pending" as const,
     }));
 
-    store.setScenes(initialized);
-
     return NextResponse.json({
       error: false,
       data: {
@@ -36,7 +33,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("analyze API error:", err);
-    store.setScenes(demoScenes);
     return NextResponse.json({
       error: false,
       data: {
@@ -46,17 +42,4 @@ export async function POST(request: NextRequest) {
       },
     });
   }
-}
-
-export async function GET() {
-  if (!store.isInitialized()) {
-    store.init(demoScenes, "2025-02-01");
-  }
-  return NextResponse.json({
-    error: false,
-    data: {
-      sceneCount: store.getScenes().length,
-      scenes: store.getScenes(),
-    },
-  });
 }

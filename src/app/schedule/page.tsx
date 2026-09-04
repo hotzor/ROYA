@@ -1,56 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ScheduleRow from "@/components/ScheduleRow";
-import type { Scene } from "@/lib/store";
+import { useRoya } from "@/components/RoyaProvider";
 
 export default function SchedulePage() {
-  const [scenes, setScenes] = useState<Scene[]>([]);
-  const [startDate, setStartDate] = useState("2025-02-03");
-  const [loading, setLoading] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(true);
-  const [weatherAlerts, setWeatherAlerts] = useState<string[]>([]);
+  const { state, origin, generateSchedule, changeStartDate, showToast } = useRoya();
+  const [startDate, setStartDate] = useState(state.startDate || "2025-02-03");
 
-  useEffect(() => {
-    fetchSchedule();
-  }, []);
+  const scenes = state.scenes;
+  const loading = state.scheduling;
 
-  async function fetchSchedule() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/schedule");
-      const data = await res.json();
-      if (!data.error && data.data) {
-        setScenes(data.data.scenes || []);
-        if (data.data.startDate) setStartDate(data.data.startDate);
-      }
-    } catch {
-      // Silent
-    } finally {
-      setLoading(false);
-      setInitialLoad(false);
+  async function handleGenerate() {
+    if (scenes.length === 0) {
+      showToast("No scenes to schedule — analyze a script first.", "error");
+      return;
     }
-  }
-
-  async function generateSchedule() {
-    setLoading(true);
-    setWeatherAlerts([]);
-    try {
-      const res = await fetch("/api/schedule", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startDate }),
-      });
-      const data = await res.json();
-      if (!data.error && data.data) {
-        setScenes(data.data.scenes || []);
-        setWeatherAlerts(data.data.weatherAlerts || []);
-      }
-    } catch {
-      // Silent
-    } finally {
-      setLoading(false);
-    }
+    changeStartDate(startDate);
+    await generateSchedule(startDate);
   }
 
   const days = Array.from(new Set(scenes.map((s) => s.dayNumber).filter(Boolean))).sort(
@@ -68,6 +35,14 @@ export default function SchedulePage() {
           <p className="text-gray-400 mt-2 text-sm md:text-base">
             Weather-aware schedule — rain auto-reschedules exterior scenes.
           </p>
+          <div className="mt-2 flex items-center gap-2">
+            {origin === "demo" && (
+              <span className="badge bg-blue-500/20 text-blue-400 border border-blue-500/30">Demo data</span>
+            )}
+            {origin === "analysis" && (
+              <span className="badge bg-amber-500/20 text-amber-400 border border-amber-500/30">Your analysis</span>
+            )}
+          </div>
         </div>
         <div className="flex flex-wrap items-end gap-3 w-full md:w-auto">
           <div className="flex-1 min-w-[140px] md:flex-none">
@@ -79,20 +54,11 @@ export default function SchedulePage() {
               className="input-dark text-sm w-full"
             />
           </div>
-          <button onClick={generateSchedule} disabled={loading} className="btn-primary min-h-[44px]">
+          <button onClick={handleGenerate} disabled={loading} className="btn-primary min-h-[44px]">
             {loading ? "⏳ Scheduling..." : "🎬 Generate Schedule"}
           </button>
         </div>
       </header>
-
-      {weatherAlerts.length > 0 && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3">
-          <p className="text-sm font-semibold text-red-400 mb-1">Weather Alerts</p>
-          {weatherAlerts.map((alert, i) => (
-            <p key={i} className="text-xs text-red-300">{alert}</p>
-          ))}
-        </div>
-      )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card text-center">
@@ -113,11 +79,21 @@ export default function SchedulePage() {
         </div>
       </div>
 
-      {!initialLoad && scenes.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="card animate-pulse">
+              <div className="h-4 bg-dark-600 rounded w-2/3 mb-3" />
+              <div className="h-3 bg-dark-600 rounded w-full mb-2" />
+              <div className="h-3 bg-dark-600 rounded w-5/6" />
+            </div>
+          ))}
+        </div>
+      ) : scenes.length === 0 ? (
         <div className="card text-center py-12">
           <p className="text-gray-500 text-lg">No schedule generated yet.</p>
           <p className="text-gray-600 text-sm mt-2">
-            Set a start date and click <strong>Generate Schedule</strong>.
+            Analyze a script first, then set a start date and click <strong>Generate Schedule</strong>.
           </p>
         </div>
       ) : (

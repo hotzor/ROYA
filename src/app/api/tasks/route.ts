@@ -1,22 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { store } from "@/lib/store";
-import { demoTasks } from "@/lib/demo-data";
-
-function ensureDemoTasks() {
-  if (!store.isInitialized()) {
-    store.init([], "2025-02-01");
-  }
-  if (store.getTasks().length === 0) {
-    for (const task of demoTasks) {
-      store.addTask(task);
-    }
-  }
-}
+import { demoTasks, demoScenes } from "@/lib/demo-data";
 
 export async function GET() {
   try {
-    ensureDemoTasks();
-    const tasks = store.getTasks();
+    const tasks = demoTasks;
     return NextResponse.json({
       error: false,
       data: {
@@ -40,8 +27,6 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    ensureDemoTasks();
-
     const body = await request.json();
     const { sceneId, department, task, assignee, status } = body;
 
@@ -52,7 +37,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const scene = store.getScene(sceneId);
+    const scene = demoScenes.find((s) => s.id === sceneId);
     const sceneSlug = scene?.slug || "unknown";
 
     const id = `task-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
@@ -67,44 +52,11 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     };
 
-    store.addTask(newTask);
-
     return NextResponse.json({ error: false, data: newTask });
   } catch (err) {
     console.error("tasks POST error:", err);
     return NextResponse.json(
       { error: true, message: "Failed to create task." },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PATCH(request: NextRequest) {
-  try {
-    ensureDemoTasks();
-    const body = await request.json();
-    const { id, ...updates } = body;
-
-    if (!id) {
-      return NextResponse.json(
-        { error: true, message: "Task id is required." },
-        { status: 400 }
-      );
-    }
-
-    const updated = store.updateTask(id, updates);
-    if (!updated) {
-      return NextResponse.json(
-        { error: true, message: `Task "${id}" not found.` },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ error: false, data: updated });
-  } catch (err) {
-    console.error("tasks PATCH error:", err);
-    return NextResponse.json(
-      { error: true, message: "Failed to update task." },
       { status: 500 }
     );
   }

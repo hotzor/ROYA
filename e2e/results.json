@@ -1,5 +1,5 @@
 {
-  "appUrl": "https://roya-seven.vercel.app",
+  "appUrl": "http://localhost:3000",
   "activBrowser": "cached-chrome-152.0.7977",
   "activChromeVersion": "152.0.0.0",
   "modelContextSurface": {
@@ -35,7 +35,7 @@
   "execution": {
     "get_production_status": {
       "ok": true,
-      "raw": "{\"error\":false,\"data\":{\"totalScenes\":0,\"completedScenes\":0,\"totalTasks\":8,\"completedTasks\":2,\"shootingDays\":0,\"nextShootDate\":null,\"weatherAlerts\":[],\"completionPercent\":25}}"
+      "raw": "{\"error\":false,\"data\":{\"totalScenes\":12,\"completedScenes\":0,\"totalTasks\":8,\"completedTasks\":2,\"shootingDays\":3,\"nextShootDate\":null,\"weatherAlerts\":[],\"completionPercent\":10}}"
     },
     "get_weather_forecast": {
       "ok": true,
@@ -44,5 +44,5 @@
   },
   "executionPassed": true,
   "verdict": "PASS",
-  "timestamp": "2026-09-04T01:22:52.684Z"
+  "timestamp": "2026-09-04T02:07:46.543Z"
 }

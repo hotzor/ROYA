@@ -1,39 +1,27 @@
 import { NextResponse } from "next/server";
-import { store } from "@/lib/store";
 import { demoScenes, demoTasks } from "@/lib/demo-data";
 
-function ensureInitialized() {
-  if (!store.isInitialized()) {
-    store.init(demoScenes, "2025-02-01");
-    for (const task of demoTasks) {
-      store.addTask(task);
-    }
-  }
+function computeStatus(scenes: typeof demoScenes, tasks: typeof demoTasks) {
+  const completedScenes = scenes.filter((s) => s.status === "completed").length;
+  const completedTasks = tasks.filter((t) => t.status === "done").length;
+  const days = new Set(scenes.filter((s) => s.dayNumber).map((s) => s.dayNumber));
+  const total = Math.max(scenes.length + tasks.length, 1);
+  const done = completedScenes + completedTasks;
+  return {
+    totalScenes: scenes.length,
+    completedScenes,
+    totalTasks: tasks.length,
+    completedTasks,
+    shootingDays: days.size,
+    nextShootDate: "2025-02-03",
+    weatherAlerts: [] as string[],
+    completionPercent: Math.round((done / total) * 100),
+  };
 }
 
 export async function GET() {
-  try {
-    ensureInitialized();
-    const status = store.getStatus();
-
-    return NextResponse.json({
-      error: false,
-      data: status,
-    });
-  } catch (err) {
-    console.error("status API error:", err);
-    return NextResponse.json({
-      error: false,
-      data: {
-        totalScenes: 12,
-        completedScenes: 0,
-        totalTasks: 8,
-        completedTasks: 2,
-        shootingDays: 3,
-        nextShootDate: "2025-02-03",
-        weatherAlerts: [],
-        completionPercent: 17,
-      },
-    });
-  }
+  return NextResponse.json({
+    error: false,
+    data: computeStatus(demoScenes, demoTasks),
+  });
 }

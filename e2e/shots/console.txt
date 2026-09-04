@@ -1,5 +1,5 @@
 ROYA WebMCP verification — console (browser: cached-chrome-152.0.7977, Chrome 152.0.0.0)
-Target: https://roya-seven.vercel.app
+Target: http://localhost:3000
 Modern modelContext: true
 
 Registered tools:
@@ -13,10 +13,12 @@ Registered tools:
   [✓] reschedule_scene
 
 Execution:
-  [OK] get_production_status => {"error":false,"data":{"totalScenes":0,"completedScenes":0,"totalTasks":8,"completedTasks":2,"shootingDays":0,"nextShootDate":null,"weatherAlerts":[],"completionPercent":25}}
+  [OK] get_production_status => {"error":false,"data":{"totalScenes":12,"completedScenes":0,"totalTasks":8,"completedTasks":2,"shootingDays":3,"nextShootDate":null,"weatherAlerts":[],"completionPercent":10}}
   [OK] get_weather_forecast => {"error":false,"data":{"date":"2025-02-03","location":"Studio A","temp":16,"conditions":"Light Rain","rainPercent":58,"icon":"🌧️"}}
 
 Page console (last 25):
+  [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+  [error] Failed to load resource: the server responded with a status of 404 (Not Found)
   [log] [ROYA] MCP tool registered: analyze_script
   [log] [ROYA] MCP tool registered: get_scene_breakdown
   [log] [ROYA] MCP tool registered: get_weather_forecast
@@ -26,7 +28,9 @@ Page console (last 25):
   [log] [ROYA] MCP tool registered: get_production_status
   [log] [ROYA] MCP tool registered: export_call_sheet
   [log] [ROYA] 8 WebMCP tools registered successfully.
-  [error] Failed to load resource: the server responded with a status of 404 ()
+  [log] [Fast Refresh] rebuilding
+  [log] [Fast Refresh] done in 860ms
+  [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
   [log] [ROYA] MCP tool registered: analyze_script
   [log] [ROYA] MCP tool registered: get_scene_breakdown
   [log] [ROYA] MCP tool registered: get_weather_forecast
@@ -36,3 +40,4 @@ Page console (last 25):
   [log] [ROYA] MCP tool registered: get_production_status
   [log] [ROYA] MCP tool registered: export_call_sheet
   [log] [ROYA] 8 WebMCP tools registered successfully.
+  [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

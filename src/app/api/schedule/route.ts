@@ -1,27 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
-import { store } from "@/lib/store";
-import { generateSchedule } from "@/lib/planner";
+import { generateSchedule, rescheduleScene } from "@/lib/planner";
 import { demoScenes } from "@/lib/demo-data";
+
+function demoFallbackPayload() {
+  const scenes = demoScenes.map((s, i) => ({
+    ...s,
+    dayNumber: Math.floor(i / 4) + 1,
+    scheduledDate: `2025-02-0${Math.floor(i / 4) + 3}`,
+    status: "scheduled",
+  }));
+  return {
+    startDate: "2025-02-03",
+    totalScheduled: scenes.length,
+    days: 3,
+    scenes,
+    weatherAlerts: [] as string[],
+  };
+}
 
 export async function POST(request: NextRequest) {
   try {
-    if (!store.isInitialized()) {
-      store.init(demoScenes, "2025-02-01");
+    const body = await request.json().catch(() => ({}));
+
+    // reschedule_scene: update a single scene's date/day within the provided scene set.
+    if (body.sceneId && body.newDate && body.newDayNumber && Array.isArray(body.scenes)) {
+      const updated = rescheduleScene(body.scenes, body.sceneId, body.newDate, body.newDayNumber);
+      return NextResponse.json({
+        error: false,
+        data: {
+          startDate: body.startDate || "2025-02-03",
+          totalScheduled: updated.length,
+          days: Array.from(new Set(updated.map((s) => s.dayNumber))).filter(Boolean).length,
+          scenes: updated,
+          weatherAlerts: [],
+        },
+      });
     }
 
-    const body = await request.json().catch(() => ({}));
-    const startDate = body.startDate || store.getScheduleStartDate() || "2025-02-03";
-
-    const scenes = store.getScenes();
-    const scheduled = await generateSchedule(scenes, startDate);
-
-    store.setScenes(scheduled);
-    store.setScheduleStartDate(startDate);
+    const scenesInput = Array.isArray(body.scenes) ? body.scenes : demoScenes;
+    const startDate = body.startDate || "2025-02-03";
+    const scheduled = await generateSchedule(scenesInput, startDate);
 
     const forecasts = scheduled
       .filter((s) => s.weather)
       .map((s) => s.weather!);
-    store.setWeatherCache(forecasts);
 
     return NextResponse.json({
       error: false,
@@ -39,38 +61,14 @@ export async function POST(request: NextRequest) {
     console.error("schedule API error:", err);
     return NextResponse.json({
       error: false,
-      data: {
-        startDate: "2025-02-03",
-        totalScheduled: demoScenes.length,
-        days: 3,
-        scenes: demoScenes.map((s, i) => ({
-          ...s,
-          dayNumber: Math.floor(i / 4) + 1,
-          scheduledDate: `2025-02-0${Math.floor(i / 4) + 3}`,
-          status: "scheduled",
-        })),
-        weatherAlerts: [],
-      },
+      data: demoFallbackPayload(),
     });
   }
 }
 
 export async function GET() {
-  if (!store.isInitialized()) {
-    store.init(demoScenes, "2025-02-01");
-  }
-
-  const scenes = store.getScenes();
-  const scheduled = scenes.filter((s) => s.scheduledDate);
-  const days = Array.from(new Set(scheduled.map((s) => s.dayNumber))).filter(Boolean);
-
   return NextResponse.json({
     error: false,
-    data: {
-      startDate: store.getScheduleStartDate(),
-      totalScheduled: scheduled.length,
-      days: days.length,
-      scenes: scheduled,
-    },
+    data: demoFallbackPayload(),
   });
 }

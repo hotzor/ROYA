@@ -1,42 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SceneCard from "@/components/SceneCard";
+import { useRoya } from "@/components/RoyaProvider";
 import type { Scene } from "@/lib/store";
 
 export default function ScreenplayPage() {
-  const [scenes, setScenes] = useState<Scene[]>([]);
+  const { state, origin, changeSceneStatus } = useRoya();
   const [filter, setFilter] = useState<string>("all");
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("/api/scenes")
-      .then((r) => r.json())
-      .then((data) => {
-        setScenes(data.data?.scenes || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  async function updateStatus(id: string, status: Scene["status"]) {
-    try {
-      const res = await fetch("/api/tasks", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
-      });
-      if (res.ok) {
-        setScenes((prev) =>
-          prev.map((s) => (s.id === id ? { ...s, status } : s))
-        );
-      }
-    } catch {
-      setScenes((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status } : s))
-      );
-    }
-  }
+  const scenes = state.scenes;
+  const loading = false;
 
   const filtered = filter === "all" ? scenes : scenes.filter((s) => s.status === filter);
 
@@ -48,16 +22,20 @@ export default function ScreenplayPage() {
     completed: scenes.filter((s) => s.status === "completed").length,
   };
 
+  function handleStatusChange(id: string, status: Scene["status"]) {
+    changeSceneStatus(id, status);
+  }
+
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl md:text-3xl font-bold text-amber-500 leading-tight">🎬 Scene Breakdown</h1>
-        <p className="text-gray-400 mt-2">
+        <p className="text-gray-400 mt-2 text-sm md:text-base">
           All extracted scenes with cast, props, locations, and department notes.
         </p>
       </header>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {(["all", "pending", "scheduled", "in_progress", "completed"] as const).map((f) => (
           <button
             key={f}
@@ -72,6 +50,14 @@ export default function ScreenplayPage() {
             <span className="ml-1.5 text-xs opacity-60">({counts[f]})</span>
           </button>
         ))}
+        <div className="ml-auto flex items-center gap-2">
+          {origin === "demo" && (
+            <span className="badge bg-blue-500/20 text-blue-400 border border-blue-500/30">Demo data</span>
+          )}
+          {origin === "analysis" && (
+            <span className="badge bg-amber-500/20 text-amber-400 border border-amber-500/30">Your analysis</span>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -80,7 +66,7 @@ export default function ScreenplayPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="card text-center py-12">
-          <p className="text-gray-500">No scenes match this filter.</p>
+          <p className="text-gray-500">{scenes.length === 0 ? "No scenes yet — analyze a script." : "No scenes match this filter."}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -88,7 +74,7 @@ export default function ScreenplayPage() {
             <SceneCard
               key={scene.id}
               scene={scene}
-              onStatusChange={updateStatus}
+              onStatusChange={handleStatusChange}
             />
           ))}
         </div>

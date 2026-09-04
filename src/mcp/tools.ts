@@ -1,5 +1,18 @@
 "use client";
 
+import {
+  clientAnalyze,
+  setAnalyzedScenes,
+  getState,
+  getStatus,
+  getCallSheet,
+  applySchedule,
+  addTask,
+  clientGenerateSchedule,
+  getAvailableDates,
+} from "@/lib/client-store";
+import type { WeatherForecast } from "@/lib/store";
+
 interface ModelContext {
   registerTool: (tool: MCPTool) => void;
 }
@@ -54,11 +67,16 @@ const TOOLS: MCPTool[] = [
       required: ["script"],
     },
     handler: async (input) => {
-      const res = await apiCall("/api/analyze", {
-        method: "POST",
-        body: JSON.stringify({ script: input.script }),
-      });
-      return res;
+      const scenes = await clientAnalyze(String(input.script || ""));
+      setAnalyzedScenes(scenes);
+      return {
+        error: false,
+        data: {
+          sceneCount: scenes.length,
+          scenes,
+          message: `Extracted ${scenes.length} scenes from screenplay.`,
+        },
+      };
     },
   },
   {
@@ -71,8 +89,26 @@ const TOOLS: MCPTool[] = [
       },
     },
     handler: async (input) => {
-      const params = input.sceneId ? `?id=${input.sceneId}` : "";
-      return apiCall(`/api/scenes${params}`);
+      const scenes = getState().scenes;
+      const sceneId = input.sceneId as string | undefined;
+      if (sceneId) {
+        const scene = scenes.find((s) => s.id === sceneId);
+        if (!scene) return { error: true, message: `Scene "${sceneId}" not found.` };
+        return { error: false, data: scene };
+      }
+      return {
+        error: false,
+        data: {
+          total: scenes.length,
+          byStatus: {
+            pending: scenes.filter((s) => s.status === "pending").length,
+            scheduled: scenes.filter((s) => s.status === "scheduled").length,
+            in_progress: scenes.filter((s) => s.status === "in_progress").length,
+            completed: scenes.filter((s) => s.status === "completed").length,
+          },
+          scenes,
+        },
+      };
     },
   },
   {
@@ -94,7 +130,7 @@ const TOOLS: MCPTool[] = [
   },
   {
     name: "generate_schedule",
-    description: "Generates a weather-aware shooting schedule. External scenes are placed on clear days; rain pushes INT scenes.",
+    description: "Generates a weather-aware shooting schedule from the current scenes. External scenes are placed on clear days; rain pushes INT scenes.",
     inputSchema: {
       type: "object",
       properties: {
@@ -106,10 +142,23 @@ const TOOLS: MCPTool[] = [
       required: ["startDate"],
     },
     handler: async (input) => {
-      return apiCall("/api/schedule", {
-        method: "POST",
-        body: JSON.stringify({ startDate: input.startDate }),
-      });
+      const startDate = String(input.startDate || "2025-02-03");
+      const scenes = getState().scenes;
+      const scheduled = await clientGenerateSchedule(scenes, startDate);
+      applySchedule(scheduled, startDate);
+      const forecasts = scheduled.filter((s) => s.weather).map((s) => s.weather!) as WeatherForecast[];
+      return {
+        error: false,
+        data: {
+          startDate,
+          totalScheduled: scheduled.length,
+          days: Array.from(new Set(scheduled.map((s) => s.dayNumber))).filter(Boolean).length,
+          scenes: scheduled,
+          weatherAlerts: forecasts
+            .filter((f) => f.rainPercent > 50)
+            .map((f) => `${f.date}: ${f.rainPercent}% rain at ${f.location}`),
+        },
+      };
     },
   },
   {
@@ -125,10 +174,19 @@ const TOOLS: MCPTool[] = [
       required: ["sceneId", "newDate", "newDayNumber"],
     },
     handler: async (input) => {
-      return apiCall("/api/schedule", {
-        method: "POST",
-        body: JSON.stringify(input),
-      });
+      const sceneId = String(input.sceneId || "");
+      const newDate = String(input.newDate || "");
+      const newDayNumber = Number(input.newDayNumber) || 1;
+      const current = getState();
+      const updated = current.scenes.map((s) =>
+        s.id === sceneId ? { ...s, scheduledDate: newDate, dayNumber: newDayNumber } : s
+      );
+      applySchedule(updated, current.startDate);
+      const scene = updated.find((s) => s.id === sceneId);
+      return {
+        error: false,
+        data: scene ? { scene, message: `Rescheduled ${sceneId} to ${newDate} (Day ${newDayNumber}).` } : { message: "Scene not found." },
+      };
     },
   },
   {
@@ -149,10 +207,13 @@ const TOOLS: MCPTool[] = [
       required: ["sceneId", "department", "task"],
     },
     handler: async (input) => {
-      return apiCall("/api/tasks", {
-        method: "POST",
-        body: JSON.stringify(input),
+      const task = addTask({
+        sceneId: String(input.sceneId || ""),
+        department: String(input.department || ""),
+        task: String(input.task || ""),
+        assignee: input.assignee ? String(input.assignee) : undefined,
       });
+      return { error: false, data: task };
     },
   },
   {
@@ -163,7 +224,7 @@ const TOOLS: MCPTool[] = [
       properties: {},
     },
     handler: async () => {
-      return apiCall("/api/status");
+      return { error: false, data: getStatus() };
     },
   },
   {
@@ -182,11 +243,20 @@ const TOOLS: MCPTool[] = [
       required: ["date"],
     },
     handler: async (input) => {
-      const params = new URLSearchParams({ date: input.date as string });
-      if (input.castFilter) {
-        params.set("cast", JSON.stringify(input.castFilter));
+      const date = String(input.date || "");
+      const castFilter = Array.isArray(input.castFilter) ? input.castFilter.map(String) : undefined;
+      const sheet = getCallSheet(date, castFilter);
+      if (sheet.scenes.length === 0) {
+        const dates = getAvailableDates();
+        return {
+          error: false,
+          data: {
+            availableDates: dates,
+            message: `No call sheet for ${date}. Available: ${dates.join(", ") || "none"}.`,
+          },
+        };
       }
-      return apiCall(`/api/callsheet?${params.toString()}`);
+      return { error: false, data: sheet };
     },
   },
 ];

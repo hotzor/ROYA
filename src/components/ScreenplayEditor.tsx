@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { demoScript } from "@/lib/demo-data";
+import { useRoya } from "@/components/RoyaProvider";
 
 interface ScreenplayEditorProps {
   onAnalyze: (script: string) => void;
@@ -9,11 +8,7 @@ interface ScreenplayEditorProps {
 }
 
 export default function ScreenplayEditor({ onAnalyze, isLoading }: ScreenplayEditorProps) {
-  const [script, setScript] = useState("");
-
-  const handleLoadDemo = () => {
-    setScript(demoScript);
-  };
+  const { script, changeScript, loadDemoScript } = useRoya();
 
   const handleAnalyze = () => {
     if (script.trim().length > 0) {
@@ -31,7 +26,7 @@ export default function ScreenplayEditor({ onAnalyze, isLoading }: ScreenplayEdi
           </p>
         </div>
         <button
-          onClick={handleLoadDemo}
+          onClick={loadDemoScript}
           className="btn-secondary text-sm min-h-[44px] sm:w-auto w-full"
           disabled={isLoading}
         >
@@ -41,7 +36,7 @@ export default function ScreenplayEditor({ onAnalyze, isLoading }: ScreenplayEdi
 
       <textarea
         value={script}
-        onChange={(e) => setScript(e.target.value)}
+        onChange={(e) => changeScript(e.target.value)}
         placeholder="Paste your screenplay here...
 
 FADE IN:

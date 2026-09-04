@@ -1,23 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { store } from "@/lib/store";
 import { buildCallSheet, formatCallSheetText, formatCallSheetHTML } from "@/lib/callsheet-builder";
 import { demoScenes } from "@/lib/demo-data";
 
-function ensureInitialized() {
-  if (!store.isInitialized()) {
-    store.init(demoScenes, "2025-02-01");
-  }
+function seedScenes() {
+  return demoScenes.map((s, i) => ({
+    ...s,
+    dayNumber: Math.floor(i / 4) + 1,
+    scheduledDate: `2025-02-0${Math.floor(i / 4) + 3}`,
+    status: "scheduled" as const,
+  }));
 }
 
 export async function GET(request: NextRequest) {
   try {
-    ensureInitialized();
-
     const { searchParams } = new URL(request.url);
     const date = searchParams.get("date");
     const format = searchParams.get("format") || "json";
+    let castFilter: string[] | undefined;
+    try {
+      const raw = searchParams.get("cast");
+      if (raw) castFilter = JSON.parse(raw);
+    } catch {
+      castFilter = undefined;
+    }
 
-    const scenes = store.getScenes();
+    const scenes = seedScenes();
     const dates = [...new Set(scenes.map((s) => s.scheduledDate).filter(Boolean))] as string[];
 
     if (!date) {
@@ -30,7 +37,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const sheet = buildCallSheet(scenes, date);
+    const sheet = buildCallSheet(scenes, date, castFilter);
 
     if (format === "text") {
       const text = formatCallSheetText(sheet);
@@ -52,7 +59,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: false, data: sheet });
   } catch (err) {
     console.error("callsheet API error:", err);
-    const fallbackSheet = buildCallSheet(demoScenes, "2025-02-03");
+    const fallbackSheet = buildCallSheet(seedScenes(), "2025-02-03");
     return NextResponse.json({ error: false, data: fallbackSheet });
   }
 }

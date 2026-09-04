@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { store } from "@/lib/store";
 import { demoScenes } from "@/lib/demo-data";
 
 export async function GET(request: NextRequest) {
   try {
-    if (!store.isInitialized()) {
-      store.init(demoScenes, "2025-02-01");
-    }
-
     const { searchParams } = new URL(request.url);
     const sceneId = searchParams.get("id");
 
     if (sceneId) {
-      const scene = store.getScene(sceneId);
+      const scene = demoScenes.find((s) => s.id === sceneId);
       if (!scene) {
         return NextResponse.json(
           { error: true, message: `Scene "${sceneId}" not found.` },
@@ -22,7 +17,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: false, data: scene });
     }
 
-    const scenes = store.getScenes();
+    const scenes = demoScenes;
     return NextResponse.json({
       error: false,
       data: {
