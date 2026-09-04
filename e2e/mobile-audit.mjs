@@ -30,7 +30,7 @@ const PAGES = [
   { route: "/dashboard", label: "dashboard" },
 ];
 
-const tag = process.argv.includes("--before") ? "before" : process.argv.includes("--after") ? "after" : null;
+const tag = process.argv.includes("--before") ? "before" : process.argv.includes("--after") ? "after" : process.argv.includes("--live") ? "live" : null;
 
 async function findChrome() {
   const cached = await (async () => {
@@ -92,7 +92,7 @@ async function main() {
 
       let shot = "";
       if (tag) {
-        shot = `${SHOTS_DIR}/mobile-${tag}-${p.label}.png`;
+        shot = `${SHOTS_DIR}/${tag === "live" ? "live-mobile" : `mobile-${tag}`}-${p.label}.png`;
         await page.screenshot({ path: shot, fullPage: false });
       }
 

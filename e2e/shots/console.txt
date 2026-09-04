@@ -13,7 +13,7 @@ Registered tools:
   [✓] reschedule_scene
 
 Execution:
-  [OK] get_production_status => {"error":false,"data":{"totalScenes":12,"completedScenes":0,"totalTasks":0,"completedTasks":0,"shootingDays":3,"nextShootDate":null,"weatherAlerts":[],"completionPercent":0}}
+  [OK] get_production_status => {"error":false,"data":{"totalScenes":0,"completedScenes":0,"totalTasks":8,"completedTasks":2,"shootingDays":0,"nextShootDate":null,"weatherAlerts":[],"completionPercent":25}}
   [OK] get_weather_forecast => {"error":false,"data":{"date":"2025-02-03","location":"Studio A","temp":16,"conditions":"Light Rain","rainPercent":58,"icon":"🌧️"}}
 
 Page console (last 25):

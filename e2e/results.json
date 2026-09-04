@@ -35,7 +35,7 @@
   "execution": {
     "get_production_status": {
       "ok": true,
-      "raw": "{\"error\":false,\"data\":{\"totalScenes\":12,\"completedScenes\":0,\"totalTasks\":0,\"completedTasks\":0,\"shootingDays\":3,\"nextShootDate\":null,\"weatherAlerts\":[],\"completionPercent\":0}}"
+      "raw": "{\"error\":false,\"data\":{\"totalScenes\":0,\"completedScenes\":0,\"totalTasks\":8,\"completedTasks\":2,\"shootingDays\":0,\"nextShootDate\":null,\"weatherAlerts\":[],\"completionPercent\":25}}"
     },
     "get_weather_forecast": {
       "ok": true,
@@ -44,5 +44,5 @@
   },
   "executionPassed": true,
   "verdict": "PASS",
-  "timestamp": "2026-09-04T01:19:58.551Z"
+  "timestamp": "2026-09-04T01:22:52.684Z"
 }
